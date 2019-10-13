@@ -1,16 +1,18 @@
 #include <QApplication>
-#include "WebClient.hpp"
-#include "clientmanager.hpp"
-
 #include <QtCore>
 #include <iostream>
+
+#include "Vivoka.hpp"
+#include "clientmanager.hpp"
+
 int main(int ac, char **av)
 {
     QCoreApplication a(ac, av);
-    ClientManager *client = new ClientManager(a, false);
+    GuessNumber::ClientManager *client;
 
     try {
-        QObject::connect(client, &ClientManager::closed, &a, QCoreApplication::quit);
+        client = new GuessNumber::ClientManager(a);
+        QObject::connect(client, &GuessNumber::ClientManager::closed, &a, QCoreApplication::quit);
         a.exec();
     } catch(std::exception &e) {
         std::cerr << e.what() << std::endl;

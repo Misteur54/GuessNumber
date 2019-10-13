@@ -5,18 +5,18 @@
 
 QT_USE_NAMESPACE
 
-EchoClient::EchoClient(QCoreApplication &a, bool debug, QObject *parent) :
+GuessNumber::WebClient::WebClient(QCoreApplication &a, bool debug, QObject *parent) :
     QObject(parent),
     m_debug(debug), s(stdin), out(stdout), JsonByte(new JsonFormatByte())
 {
-    connect(&m_webSocket, &QWebSocket::connected, this, &EchoClient::onConnected);
-    connect(&m_webSocket, &QWebSocket::disconnected, this, &EchoClient::closed);
-    connect(&m_webSocket, &QWebSocket::binaryMessageReceived, this, &EchoClient::MessageReceived);
+    connect(&m_webSocket, &QWebSocket::connected, this, &WebClient::onConnected);
+    connect(&m_webSocket, &QWebSocket::disconnected, this, &WebClient::closed);
+    connect(&m_webSocket, &QWebSocket::binaryMessageReceived, this, &WebClient::MessageReceived);
     initparser(a);
     m_webSocket.open(m_url);
 }
 
-void EchoClient::CheckGoodNumber(void)
+void GuessNumber::WebClient::CheckGoodNumber(void)
 {
     if (m_PacketJson.contains("GoodNumber")) {
         if (m_PacketJson["GoodNumber"] == "OK") {
@@ -28,7 +28,7 @@ void EchoClient::CheckGoodNumber(void)
     }
 }
 
-void EchoClient::CheckNumberTentative(void)
+void GuessNumber::WebClient::CheckNumberTentative(void)
 {
     if (m_PacketJson.contains("nbofTentative")) {
         if (m_PacketJson["nbofTentative"].toInt() == 0 && m_PacketJson["Play"] == "Finished" && m_PacketJson["GoodNumber"] != "OK") {
@@ -39,7 +39,7 @@ void EchoClient::CheckNumberTentative(void)
     }
 }
 
-void EchoClient::InputUser(void)
+void GuessNumber::WebClient::InputUser(void)
 {
     QString question = "";
 
@@ -50,7 +50,7 @@ void EchoClient::InputUser(void)
     }
 }
 
-void EchoClient::MessageReceived(QByteArray message)
+void GuessNumber::WebClient::MessageReceived(QByteArray message)
 {
 
     m_PacketJson = JsonByte->deserialization(message);
@@ -60,14 +60,12 @@ void EchoClient::MessageReceived(QByteArray message)
     m_webSocket.sendBinaryMessage(JsonByte->serialization(m_PacketJson));
 }
 
-void EchoClient::onConnected()
+void GuessNumber::WebClient::onConnected()
 {
-    if (m_debug)
-        qDebug() << "WebSocket connected";
     m_webSocket.sendBinaryMessage(JsonByte->serialization(m_PacketJson));
 }
 
-void EchoClient::initparser(QCoreApplication &a)
+void GuessNumber::WebClient::initparser(QCoreApplication &a)
 {
     parser.setApplicationDescription("Plus ou Moins by Elian Client");
 //    parser.addHelpOption();
@@ -78,7 +76,7 @@ void EchoClient::initparser(QCoreApplication &a)
     parser.addOption(hostopt);
     QCommandLineOption portopt(QStringList() << "p" << "port",
                 QCoreApplication::translate("main", "Port connection [def = 4242]"),
-                QCoreApplication::translate("main", "Port"), QString("1234"));
+                QCoreApplication::translate("main", "Port"), QString("4242"));
     parser.addOption(portopt);
     QCommandLineOption autoopt(QStringList() << "a" << "auto",
                                 QCoreApplication::translate("main", "Find the number automaticly"),
@@ -96,22 +94,22 @@ void EchoClient::initparser(QCoreApplication &a)
     setJson();
 }
 
-void EchoClient::setName(QString Message)
+void GuessNumber::WebClient::setName(QString Message)
 {
     m_Name = Message;
 }
 
-void EchoClient::setAdresse(QString host, QString port)
+void GuessNumber::WebClient::setAdresse(QString host, QString port)
 {
     m_url = "ws://" + host + ":" + port;
 }
 
-void EchoClient::setAuto(bool autooption)
+void GuessNumber::WebClient::setAuto(bool autooption)
 {
     m_Ia = autooption;
 }
 
-void EchoClient::setJson(void)
+void GuessNumber::WebClient::setJson(void)
 {
     m_PacketJson["name"] = m_Name;
     m_PacketJson["number"] = -1;

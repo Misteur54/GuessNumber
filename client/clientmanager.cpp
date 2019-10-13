@@ -1,12 +1,12 @@
-#include "clientmanager.hpp"
 #include <QtCore/QDebug>
+#include <iostream>
+#include "clientmanager.hpp"
 
 QT_USE_NAMESPACE
-#include <iostream>
 
-ClientManager::ClientManager(QCoreApplication &a, bool debug, QObject *parent) :
+GuessNumber::ClientManager::ClientManager(QCoreApplication &a, QObject *parent) :
     QObject(parent)
 {
-    client = new EchoClient(a, false);
-    QObject::connect(client, &EchoClient::closed, QCoreApplication::quit);
+    client = new GuessNumber::WebClient(a);
+    QObject::connect(client, &GuessNumber::WebClient::closed, QCoreApplication::quit);
 }

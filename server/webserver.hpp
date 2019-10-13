@@ -11,42 +11,43 @@
 #include "IPacket.hpp"
 #include "JsonFormat.hpp"
 
-class WebServer : public QObject, public IPacket
-{
-    Q_OBJECT
-public:
-    explicit WebServer(QCoreApplication &a, quint16 port, QObject *parent = nullptr);
-    virtual ~WebServer();
-    void setlimit(int init_limit);
-    void setbounds(int x, int y);
-    void setnbToFind(int x, int y);
+namespace GuessNumber {
 
-Q_SIGNALS:
-    void closed();
+    class WebServer : public QObject, public IPacket
+    {
+        Q_OBJECT
+    public:
+        explicit WebServer(QCoreApplication &a, quint16 port, QObject *parent = nullptr);
+        virtual ~WebServer();
+        void setlimit(int init_limit);
+        void setbounds(int x, int y);
+        void setnbToFind(int x, int y);
 
-private slots:
-    void onNewConnection();
-    void socketDisconnected();
-    void processBinaryMessage(QByteArray message);
+    Q_SIGNALS:
+        void closed();
 
-private:
-    void setJson();
-    void initparser(QCoreApplication &a);
-    void check_parser(int check, QCommandLineOption &option);
-    void checkNumber(void);
-    void checkTentative(void);
-    void checkFinished(void);
-    void readFile(void);
+    private slots:
+        void onNewConnection();
+        void socketDisconnected();
+        void processBinaryMessage(QByteArray message);
 
-    QCommandLineParser parser;
-    QWebSocketServer *m_pWebSocketServer;
-    QWebSocket *m_client;
-    QList<QWebSocket *> m_clients;
-    std::pair<int, int> bounds;
-    int limit;
-    int nbToFind;
-    QJsonObject doc;
-    JsonFormatByte *JsonByte;
-};
+    private:
+        void setJson();
+        void initparser(QCoreApplication &a);
+        void check_parser(int check, QCommandLineOption &option);
+        void checkNumber(void);
+        void checkTentative(void);
+        void checkFinished(void);
+        void readFile(void);
 
+        QCommandLineParser parser;
+        QWebSocketServer *m_pWebSocketServer;
+        QWebSocket *m_client;
+        std::pair<int, int> bounds;
+        int limit;
+        int nbToFind;
+        QJsonObject doc;
+        JsonFormatByte *JsonByte;
+    };
+}
 #endif // WEBSERVER_HPP

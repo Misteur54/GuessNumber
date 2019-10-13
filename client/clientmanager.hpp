@@ -6,19 +6,21 @@
 #include <QtCore>
 #include "WebClient.hpp"
 
-class ClientManager : public QObject
-{
-    Q_OBJECT
-public:
-    explicit ClientManager(QCoreApplication &a, bool debug = false, QObject *parent = Q_NULLPTR);
+    namespace GuessNumber {
 
-Q_SIGNALS:
-    void closed();
+    class ClientManager : public QObject
+    {
+        Q_OBJECT
+    public:
+        explicit ClientManager(QCoreApplication &a, QObject *parent = Q_NULLPTR);
 
-private:
-     EchoClient *client;
-signals:
-    void finished();
-};
+    Q_SIGNALS:
+        void closed();
 
+    private:
+         GuessNumber::WebClient *client;
+    signals:
+        void finished();
+    };
+}
 #endif // WebClient_H

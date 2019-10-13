@@ -1,5 +1,5 @@
-#ifndef VIVOKA_EXCEPTION_HPP
-#define VIVOKA_EXCEPTION_HPP
+#ifndef GuessNumber_EXCEPTION_HPP
+#define GuessNumber_EXCEPTION_HPP
 
 #include <exception>
 #include <string>
@@ -7,7 +7,7 @@
 #define EXIT_SUCCESS     0
 #define EXIT_FAIL       84
 
-namespace vivoka {
+namespace GuessNumber {
 
     class Exception : public std::exception {
         public:
@@ -18,7 +18,7 @@ namespace vivoka {
         Exception(const Exception &other) = default;
         Exception &operator=(const Exception &other) = default;
 
-        static void display(const vivoka::Exception &e);
+        static void display(const GuessNumber::Exception &e);
 
         virtual const std::string exceptionNameToString() const;
 
@@ -31,4 +31,4 @@ namespace vivoka {
     };  // Exception
 
 } // namespace
-#endif //VIVOKA_EXCEPTION_HPP
+#endif //GuessNumber_EXCEPTION_HPP

@@ -1,5 +1,5 @@
-#ifndef GuessNumber_GuessNumber_HPP
-#define GuessNumber_GuessNumber_HPP
+#ifndef VIVOKA_VIVOKA_HPP
+#define VIVOKA_VIVOKA_HPP
 
 namespace GuessNumber {
 
@@ -23,4 +23,4 @@ namespace GuessNumber {
 
 }
 
-#endif //GuessNumber_GuessNumber_HPP
+#endif //VIVOKA_VIVOKA_HPP

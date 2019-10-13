@@ -9,11 +9,11 @@
 int main(int ac, char **av)
 {
     QCoreApplication a(ac, av);
-    WebServer *server;
+    GuessNumber::WebServer *server;
 
     try {
-        server = new WebServer(a, 1234);
-        QObject::connect(server, &WebServer::closed, &a, &QCoreApplication::quit);
+        server = new GuessNumber::WebServer(a, 4242);
+        QObject::connect(server, &GuessNumber::WebServer::closed, &a, &QCoreApplication::quit);
         return a.exec();
     } catch (std::exception &e) {
         std::cerr << e.what() << std::endl;
