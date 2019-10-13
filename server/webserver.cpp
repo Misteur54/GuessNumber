@@ -36,12 +36,14 @@ void GuessNumber::WebServer::onNewConnection()
     connect(pSocket, &QWebSocket::binaryMessageReceived,
             this, &WebServer::processBinaryMessage);
     connect(pSocket, &QWebSocket::disconnected, this, &WebServer::socketDisconnected);
+    setnbToFind(bounds.first, bounds.second);
     m_client = pSocket;
 }
 
 void GuessNumber::WebServer::socketDisconnected()
 {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+
     if (pClient) {
         pClient->deleteLater();
     }
@@ -55,7 +57,6 @@ void GuessNumber::WebServer::checkNumber(void)
         else if (doc["number"].toInt() > nbToFind)
             doc["GoodNumber"] = "less";
         else {
-            printf("lol\n");
             doc["GoodNumber"] = "OK";
             doc["Play"] = "Finished";
         }
@@ -64,37 +65,30 @@ void GuessNumber::WebServer::checkNumber(void)
 
 void GuessNumber::WebServer::checkTentative(void)
 {
-    if (doc.contains("nbofTentative") && doc["Play"] != "Finished") {
+    if (doc.contains("nbofLimit") && doc["Play"] != "Finished") {
         if (limit == -1) {
-            doc["nbofTentative"] = "infini";
+            doc["nbofLimit"] = "infini";
             doc["Play"] = "Running";
             return;
         }
-        else if (doc["nbofTentative"].toInt() >= -1) {
-            if (doc["nbofTentative"].toInt() == -1)
-                doc["nbofTentative"] = limit;
+        else if (doc["nbofLimit"].toInt() >= -1) {
+            if (doc["nbofLimit"].toInt() == -1)
+                doc["nbofLimit"] = limit;
             if (doc["Play"].toString() == "Running") {
-                doc["nbofTentative"] = doc["nbofTentative"].toInt() - 1;
+                doc["nbofLimit"] = doc["nbofLimit"].toInt() - 1;
             }
-            if (doc["nbofTentative"].toInt() == 0)
+            if (doc["nbofLimit"].toInt() == 0)
                 doc["Play"] = "Finished";
             else
                 doc["Play"] = "Running";
         }
         else {
-            doc["nbofTentative"] = "0";
+            doc["nbofLimit"] = "0";
             doc["Play"] = "Finished";
         }
     }
 }
-/*
- *         QJsonDocument jsonContent;
-        QJsonObject root;
-        QString jsonString = QString::fromUtf8(JsonFile.readAll()).simplified();
-        printf("%s\n", jsonString.toLocal8Bit().data());
-        jsonContent = QJsonDocument::fromJson(jsonString.toUtf8());
-        root = jsonContent.object();
- * */
+
 void GuessNumber::WebServer::readFile(void)
 {
     QFile JsonFile(QDir::currentPath() + "/save.json");
@@ -189,5 +183,5 @@ void GuessNumber::WebServer::setbounds(int x, int y)
 
 void GuessNumber::WebServer::setnbToFind(int x, int y)
 {
-    nbToFind = (rand() % y) + x;
+    nbToFind = rand()%(y - x + 1) + x;
 }

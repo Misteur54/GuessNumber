@@ -246,7 +246,8 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		Server.pro webserver.hpp \
 		Exception.hpp \
 		IPacket.hpp \
-		JsonFormat.hpp webserver.cpp \
+		JsonFormat.hpp \
+		Vivoka.hpp webserver.cpp \
 		main.cpp \
 		Exception.cpp \
 		JsonFormat.cpp
@@ -657,7 +658,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents webserver.hpp Exception.hpp IPacket.hpp JsonFormat.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents webserver.hpp Exception.hpp IPacket.hpp JsonFormat.hpp Vivoka.hpp $(DISTDIR)/
 	$(COPY_FILE) --parents webserver.cpp main.cpp Exception.cpp JsonFormat.cpp $(DISTDIR)/
 
 

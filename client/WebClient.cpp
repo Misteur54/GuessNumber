@@ -2,19 +2,21 @@
 #include <iostream>
 #include <QDateTime>
 #include "WebClient.hpp"
+#include "Exception.hpp"
 
 QT_USE_NAMESPACE
 
-GuessNumber::WebClient::WebClient(QCoreApplication &a, bool debug, QObject *parent) :
-    QObject(parent),
-    m_debug(debug), s(stdin), out(stdout), JsonByte(new JsonFormatByte())
+GuessNumber::WebClient::WebClient(QCoreApplication &a, QObject *parent) :
+    QObject(parent), s(stdin), out(stdout), JsonByte(new JsonFormatByte())
 {
     connect(&m_webSocket, &QWebSocket::connected, this, &WebClient::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &WebClient::closed);
     connect(&m_webSocket, &QWebSocket::binaryMessageReceived, this, &WebClient::MessageReceived);
     initparser(a);
+    srand(time(NULL));
     m_webSocket.open(m_url);
 }
+
 
 void GuessNumber::WebClient::CheckGoodNumber(void)
 {
@@ -30,9 +32,9 @@ void GuessNumber::WebClient::CheckGoodNumber(void)
 
 void GuessNumber::WebClient::CheckNumberTentative(void)
 {
-    if (m_PacketJson.contains("nbofTentative")) {
-        if (m_PacketJson["nbofTentative"].toInt() == 0 && m_PacketJson["Play"] == "Finished" && m_PacketJson["GoodNumber"] != "OK") {
-            out << "You loss because you don't have any change" << endl;
+    if (m_PacketJson.contains("nbofLimit")) {
+        if (m_PacketJson["nbofLimit"].toInt() == 0 && m_PacketJson["Play"] == "Finished" && m_PacketJson["GoodNumber"] != "OK") {
+            out << "You loss because you don't have any chance" << endl;
             m_webSocket.close();
             emit closed();
         }
@@ -43,10 +45,15 @@ void GuessNumber::WebClient::InputUser(void)
 {
     QString question = "";
 
-    while (question.toInt() == 0 && m_PacketJson["Play"] == "Running" && m_PacketJson["GoodNumber"] != "OK") {
-        out << "Enter yout number :" << endl;
-        question = s.readLine();
-        m_PacketJson["number"] = QString(question).toInt();
+    if (m_PacketJson["auto"] == true)
+        m_PacketJson["number"] = rand();
+    else {
+        while (question.toInt() == 0 && m_PacketJson["Play"] == "Running" && m_PacketJson["GoodNumber"] != "OK") {
+            out << "Enter one number :" << endl;
+            question = s.readLine();
+            m_PacketJson["number"] = QString(question).toInt();
+        }
+        m_PacketJson["HowManyInput"] = m_PacketJson["HowManyInput"].toInt() + 1;
     }
 }
 
@@ -62,7 +69,7 @@ void GuessNumber::WebClient::MessageReceived(QByteArray message)
 
 void GuessNumber::WebClient::onConnected()
 {
-    m_webSocket.sendBinaryMessage(JsonByte->serialization(m_PacketJson));
+   m_webSocket.sendBinaryMessage(JsonByte->serialization(m_PacketJson));
 }
 
 void GuessNumber::WebClient::initparser(QCoreApplication &a)
@@ -79,8 +86,7 @@ void GuessNumber::WebClient::initparser(QCoreApplication &a)
                 QCoreApplication::translate("main", "Port"), QString("4242"));
     parser.addOption(portopt);
     QCommandLineOption autoopt(QStringList() << "a" << "auto",
-                                QCoreApplication::translate("main", "Find the number automaticly"),
-                                QCoreApplication::translate("main", "Auto"));
+                                QCoreApplication::translate("main", "Find the number automaticly"));
     parser.addOption(autoopt);
     QCommandLineOption nameopt(QStringList() << "n" << "name",
                 QCoreApplication::translate("main", "Name of Player"),
@@ -116,7 +122,7 @@ void GuessNumber::WebClient::setJson(void)
     m_PacketJson["auto"] = m_Ia;
     m_PacketJson["GoodNumber"] = "NULL";
     m_PacketJson["Play"] = "NULL";
-    m_PacketJson["nbofTentative"] = -1;
+    m_PacketJson["nbofLimit"] = -1;
     m_PacketJson["HowInput"] = "NULL";
     m_PacketJson["HowManyInput"] = 0;
     m_PacketJson["StartTime"] = QDate::currentDate().toString()+ " " + QTime::currentTime().toString();

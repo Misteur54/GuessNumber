@@ -26,11 +26,13 @@ SOURCES += \
         clientmanager.cpp \
         WebClient.cpp\
         main.cpp \
-        JsonFormat.cpp
+        JsonFormat.cpp \
+        Exception.cpp
 
 HEADERS += \
         clientmanager.hpp \
         WebClient.hpp \
         IPacket.hpp \
         JsonFormat.hpp \
-        Vivoka.hpp
+        Vivoka.hpp \
+        Exception.hpp

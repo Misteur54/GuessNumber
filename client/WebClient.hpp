@@ -7,13 +7,14 @@
 #include "IPacket.hpp"
 #include "JsonFormat.hpp"
 
+
 namespace GuessNumber {
 
     class WebClient : public QObject, public IPacket
     {
         Q_OBJECT
     public:
-        explicit WebClient(QCoreApplication &a, bool debug = false, QObject *parent = Q_NULLPTR);
+        explicit WebClient(QCoreApplication &a, QObject *parent = Q_NULLPTR);
         void setName(QString Name);
         void setAdresse(QString host, QString port);
         void setAuto(bool autoption);
@@ -34,7 +35,6 @@ namespace GuessNumber {
         void InputUser(void);
 
         bool m_Ia;
-        bool m_debug;
         QWebSocket m_webSocket;
         QUrl m_url;
         QString m_host;

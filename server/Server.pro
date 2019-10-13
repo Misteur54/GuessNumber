@@ -32,4 +32,5 @@ HEADERS += \
         webserver.hpp \
         Exception.hpp \
         IPacket.hpp \
-        JsonFormat.hpp
+        JsonFormat.hpp \
+        Vivoka.hpp

@@ -53,12 +53,14 @@ OBJECTS_DIR   = ./
 SOURCES       = clientmanager.cpp \
 		WebClient.cpp \
 		main.cpp \
-		JsonFormat.cpp moc_clientmanager.cpp \
+		JsonFormat.cpp \
+		Exception.cpp moc_clientmanager.cpp \
 		moc_WebClient.cpp
 OBJECTS       = clientmanager.o \
 		WebClient.o \
 		main.o \
 		JsonFormat.o \
+		Exception.o \
 		moc_clientmanager.o \
 		moc_WebClient.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
@@ -249,10 +251,12 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		WebClient.hpp \
 		IPacket.hpp \
 		JsonFormat.hpp \
-		Vivoka.hpp clientmanager.cpp \
+		Vivoka.hpp \
+		Exception.hpp clientmanager.cpp \
 		WebClient.cpp \
 		main.cpp \
-		JsonFormat.cpp
+		JsonFormat.cpp \
+		Exception.cpp
 QMAKE_TARGET  = client
 DESTDIR       = 
 TARGET        = client
@@ -660,8 +664,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents clientmanager.hpp WebClient.hpp IPacket.hpp JsonFormat.hpp Vivoka.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents clientmanager.cpp WebClient.cpp main.cpp JsonFormat.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents clientmanager.hpp WebClient.hpp IPacket.hpp JsonFormat.hpp Vivoka.hpp Exception.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents clientmanager.cpp WebClient.cpp main.cpp JsonFormat.cpp Exception.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -733,7 +737,8 @@ clientmanager.o: clientmanager.cpp clientmanager.hpp \
 
 WebClient.o: WebClient.cpp WebClient.hpp \
 		IPacket.hpp \
-		JsonFormat.hpp
+		JsonFormat.hpp \
+		Exception.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o WebClient.o WebClient.cpp
 
 main.o: main.cpp Vivoka.hpp \
@@ -745,6 +750,9 @@ main.o: main.cpp Vivoka.hpp \
 
 JsonFormat.o: JsonFormat.cpp JsonFormat.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o JsonFormat.o JsonFormat.cpp
+
+Exception.o: Exception.cpp Exception.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Exception.o Exception.cpp
 
 moc_clientmanager.o: moc_clientmanager.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_clientmanager.o moc_clientmanager.cpp
