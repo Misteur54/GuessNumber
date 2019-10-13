@@ -25,9 +25,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         webserver.cpp \
         main.cpp \
-        Exception.cpp
+        Exception.cpp \
+        JsonFormat.cpp
 
 HEADERS += \
         webserver.hpp \
         Exception.hpp \
-        IPacket.hpp
+        IPacket.hpp \
+        JsonFormat.hpp

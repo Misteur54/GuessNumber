@@ -52,11 +52,13 @@ OBJECTS_DIR   = ./
 
 SOURCES       = clientmanager.cpp \
 		WebClient.cpp \
-		main.cpp moc_clientmanager.cpp \
+		main.cpp \
+		JsonFormat.cpp moc_clientmanager.cpp \
 		moc_WebClient.cpp
 OBJECTS       = clientmanager.o \
 		WebClient.o \
 		main.o \
+		JsonFormat.o \
 		moc_clientmanager.o \
 		moc_WebClient.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
@@ -244,11 +246,12 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
 		/usr/lib64/qt5/mkspecs/features/lex.prf \
 		vivoka_qt.pro clientmanager.hpp \
-		dialog.h \
 		WebClient.hpp \
-		IPacket.hpp clientmanager.cpp \
+		IPacket.hpp \
+		JsonFormat.hpp clientmanager.cpp \
 		WebClient.cpp \
-		main.cpp
+		main.cpp \
+		JsonFormat.cpp
 QMAKE_TARGET  = vivoka_qt
 DESTDIR       = 
 TARGET        = vivoka_qt
@@ -656,8 +659,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents clientmanager.hpp dialog.h WebClient.hpp IPacket.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents clientmanager.cpp WebClient.cpp main.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents clientmanager.hpp WebClient.hpp IPacket.hpp JsonFormat.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents clientmanager.cpp WebClient.cpp main.cpp JsonFormat.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -694,12 +697,14 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) moc_clientmanager.cpp moc_WebClient.cpp
 moc_clientmanager.cpp: WebClient.hpp \
 		IPacket.hpp \
+		JsonFormat.hpp \
 		clientmanager.hpp \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
 	/usr/lib64/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/elian.nicaise/vivoka_qt/client -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtWebSockets -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/c++/7/x86_64-redhat-linux -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-redhat-linux/7/include -I/usr/local/include -I/usr/include clientmanager.hpp -o moc_clientmanager.cpp
 
 moc_WebClient.cpp: IPacket.hpp \
+		JsonFormat.hpp \
 		WebClient.hpp \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
@@ -721,17 +726,23 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 clientmanager.o: clientmanager.cpp clientmanager.hpp \
 		WebClient.hpp \
-		IPacket.hpp
+		IPacket.hpp \
+		JsonFormat.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o clientmanager.o clientmanager.cpp
 
 WebClient.o: WebClient.cpp WebClient.hpp \
-		IPacket.hpp
+		IPacket.hpp \
+		JsonFormat.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o WebClient.o WebClient.cpp
 
 main.o: main.cpp WebClient.hpp \
 		IPacket.hpp \
+		JsonFormat.hpp \
 		clientmanager.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+JsonFormat.o: JsonFormat.cpp JsonFormat.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o JsonFormat.o JsonFormat.cpp
 
 moc_clientmanager.o: moc_clientmanager.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_clientmanager.o moc_clientmanager.cpp

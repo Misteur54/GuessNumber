@@ -9,6 +9,7 @@
 #include <QtCore>
 #include <ctime>
 #include "IPacket.hpp"
+#include "JsonFormat.hpp"
 
 class WebServer : public QObject, public IPacket
 {
@@ -29,18 +30,23 @@ private slots:
     void processBinaryMessage(QByteArray message);
 
 private:
-    QByteArray serialization(QJsonObject message);
-    QJsonObject deserialization(QByteArray message);
     void setJson();
-
     void initparser(QCoreApplication &a);
     void check_parser(int check, QCommandLineOption &option);
+    void checkNumber(void);
+    void checkTentative(void);
+    void checkFinished(void);
+    void readFile(void);
+
     QCommandLineParser parser;
     QWebSocketServer *m_pWebSocketServer;
     QWebSocket *m_client;
+    QList<QWebSocket *> m_clients;
     std::pair<int, int> bounds;
     int limit;
     int nbToFind;
+    QJsonObject doc;
+    JsonFormatByte *JsonByte;
 };
 
 #endif // WEBSERVER_HPP

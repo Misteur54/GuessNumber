@@ -1,12 +1,13 @@
 #include <QtCore/QDebug>
 #include <iostream>
+#include <QDateTime>
 #include "WebClient.hpp"
 
 QT_USE_NAMESPACE
 
 EchoClient::EchoClient(QCoreApplication &a, bool debug, QObject *parent) :
     QObject(parent),
-    m_debug(debug)
+    m_debug(debug), s(stdin), out(stdout), JsonByte(new JsonFormatByte())
 {
     connect(&m_webSocket, &QWebSocket::connected, this, &EchoClient::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &EchoClient::closed);
@@ -14,42 +15,60 @@ EchoClient::EchoClient(QCoreApplication &a, bool debug, QObject *parent) :
     initparser(a);
     m_webSocket.open(m_url);
 }
-void EchoClient::MessageReceived(QByteArray message)
+
+void EchoClient::CheckGoodNumber(void)
+{
+    if (m_PacketJson.contains("GoodNumber")) {
+        if (m_PacketJson["GoodNumber"] == "OK") {
+            out << "You win!" << endl;
+            m_webSocket.close();
+            emit closed();
+        } else if (m_PacketJson.contains("number") && m_PacketJson["number"].toInt() != -1)
+            out << "It's not good number, try again, it's " << m_PacketJson["GoodNumber"].toString() << endl;
+    }
+}
+
+void EchoClient::CheckNumberTentative(void)
+{
+    if (m_PacketJson.contains("nbofTentative")) {
+        if (m_PacketJson["nbofTentative"].toInt() == 0 && m_PacketJson["Play"] == "Finished" && m_PacketJson["GoodNumber"] != "OK") {
+            out << "You loss because you don't have any change" << endl;
+            m_webSocket.close();
+            emit closed();
+        }
+    }
+}
+
+void EchoClient::InputUser(void)
 {
     QString question = "";
-    QTextStream s(stdin);
-    QTextStream out(stdout);
-    QJsonObject nb;
 
-    QJsonObject test = deserialization(message);
-    while(question.toInt() == 0){
+    while (question.toInt() == 0 && m_PacketJson["Play"] == "Running" && m_PacketJson["GoodNumber"] != "OK") {
         out << "Enter yout number :" << endl;
         question = s.readLine();
-        printf("number is =  %s\n", question.toLocal8Bit().data());
         m_PacketJson["number"] = QString(question).toInt();
     }
-    m_webSocket.sendBinaryMessage(serialization(m_PacketJson));
+}
+
+void EchoClient::MessageReceived(QByteArray message)
+{
+
+    m_PacketJson = JsonByte->deserialization(message);
+    CheckGoodNumber();
+    CheckNumberTentative();
+    InputUser();
+    m_webSocket.sendBinaryMessage(JsonByte->serialization(m_PacketJson));
 }
 
 void EchoClient::onConnected()
 {
     if (m_debug)
         qDebug() << "WebSocket connected";
-    m_webSocket.sendBinaryMessage(serialization(m_PacketJson));
-}
-
-void EchoClient::sendMessage(QString Message)
-{
-    QJsonObject jsonObj;
-    QJsonDocument doc(jsonObj);
-    QString strJson(doc.toJson(QJsonDocument::Compact));
-
-    m_webSocket.sendBinaryMessage(Message.toLocal8Bit().data());
+    m_webSocket.sendBinaryMessage(JsonByte->serialization(m_PacketJson));
 }
 
 void EchoClient::initparser(QCoreApplication &a)
 {
-    printf("test\n");
     parser.setApplicationDescription("Plus ou Moins by Elian Client");
 //    parser.addHelpOption();
 
@@ -92,29 +111,16 @@ void EchoClient::setAuto(bool autooption)
     m_Ia = autooption;
 }
 
-QByteArray EchoClient::serialization(QJsonObject message)
-{
-    QJsonDocument doc(message);
-    QByteArray bytes = doc.toJson();
-
-    return (bytes);
-}
-
-QJsonObject EchoClient::deserialization(QByteArray message)
-{
-    QJsonDocument doc = QJsonDocument::fromJson(message);
-    printf("|%s|\n", QString(message).toLocal8Bit().data());
-    QJsonObject test = doc.object();
-//    QString lol(doc.toJson(QJsonDocument::Compact));
-    return (test);
-}
-
-void EchoClient::setJson()
+void EchoClient::setJson(void)
 {
     m_PacketJson["name"] = m_Name;
     m_PacketJson["number"] = -1;
     m_PacketJson["auto"] = m_Ia;
     m_PacketJson["GoodNumber"] = "NULL";
-    m_PacketJson["Finished"] = "NULL";
+    m_PacketJson["Play"] = "NULL";
     m_PacketJson["nbofTentative"] = -1;
+    m_PacketJson["HowInput"] = "NULL";
+    m_PacketJson["HowManyInput"] = 0;
+    m_PacketJson["StartTime"] = QDate::currentDate().toString()+ " " + QTime::currentTime().toString();
+    m_PacketJson["StopTime"] = "NULL";
 }

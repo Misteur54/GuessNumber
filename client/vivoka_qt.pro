@@ -25,10 +25,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         clientmanager.cpp \
         WebClient.cpp\
-        main.cpp
+        main.cpp \
+        JsonFormat.cpp
 
 HEADERS += \
         clientmanager.hpp \
-        dialog.h \
         WebClient.hpp \
-        IPacket.hpp
+        IPacket.hpp \
+        JsonFormat.hpp

@@ -8,4 +8,5 @@ ClientManager::ClientManager(QCoreApplication &a, bool debug, QObject *parent) :
     QObject(parent)
 {
     client = new EchoClient(a, false);
+    QObject::connect(client, &EchoClient::closed, QCoreApplication::quit);
 }

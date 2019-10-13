@@ -10,7 +10,7 @@ int main(int ac, char **av)
     ClientManager *client = new ClientManager(a, false);
 
     try {
-        QObject::connect(client, SIGNAL(finished()), &a, SLOT(quit()));
+        QObject::connect(client, &ClientManager::closed, &a, QCoreApplication::quit);
         a.exec();
     } catch(std::exception &e) {
         std::cerr << e.what() << std::endl;
