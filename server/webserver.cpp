@@ -92,15 +92,18 @@ void GuessNumber::WebServer::checkTentative(void)
 void GuessNumber::WebServer::readFile(void)
 {
     QFile JsonFile(QDir::currentPath() + "/save.json");
-    QJsonDocument read;
-    QJsonArray array;
+    QJsonDocument write;
+    QJsonObject recordObj;
 
-    if (JsonFile.open(QFile::ReadOnly | QFile::WriteOnly)) {
-        read = QJsonDocument::fromJson(JsonFile.readAll());
-        array << doc;
-        read.setArray(array);
-        array = read.array();
-        JsonFile.write(read.toJson());
+    if (JsonFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::ReadOnly)) {
+        recordObj.insert("Party Status", QJsonValue::fromVariant(doc["HowInput"].toString()));
+        recordObj.insert("Start Party", QJsonValue::fromVariant(doc["StartTime"].toString()));
+        recordObj.insert("Stop Party", QJsonValue::fromVariant(doc["StopTime"].toString()));
+        recordObj.insert("Name", QJsonValue::fromVariant(doc["name"].toString()));
+        recordObj.insert("Number of Tentative", QJsonValue::fromVariant(doc["HowManyInput"].toInt()));
+	write.setObject(recordObj);
+        JsonFile.write(write.toJson());
+        JsonFile.close();
     } else
         throw (GuessNumber::Exception("not open JsonFile\n"));
 }
